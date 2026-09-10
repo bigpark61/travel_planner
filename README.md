@@ -1,97 +1,19 @@
-# ✈️ AI Travel Planner
+네. 기존 README에 **“API 방식 실행”과 “웹에서 실행”을 명확히 분리**해서 넣는 것이 좋습니다. 현재 `travel_planner`가 Flask의 `app.py`와 CLI용 `travel_planner.py`를 사용하는 구조이므로, 아래처럼 README의 **6. 프로그램 실행 방법** 부분을 교체하면 됩니다.
 
-OpenAI와 NAVER API HUB를 활용하여 여행지를 추천하고,
-해당 지역의 맛집 정보를 검색하여 여행 계획을 생성하는 AI 기반 여행 플래너입니다.
+````markdown
+## 6. 프로그램 실행 방법
 
----
+Travel Planner는 다음 방식으로 실행할 수 있습니다.
 
-## 1. 프로젝트 소개
+1. Python 콘솔에서 직접 실행
+2. Flask API 서버 실행
+3. 웹 브라우저에서 실행
 
-사용자가 여행 날짜를 입력하면 AI가 여행지를 추천하고,
-NAVER API HUB의 지역 검색 API를 이용하여 추천 여행지 주변의 맛집 정보를 검색합니다.
-
-검색된 정보를 바탕으로 OpenAI가 최종 여행 리포트를 생성합니다.
-
-### 주요 처리 과정
-
-사용자 입력
-↓
-OpenAI 여행지 추천
-↓
-NAVER API HUB 지역/맛집 검색
-↓
-OpenAI 최종 여행 리포트 생성
-↓
-결과 화면 출력 및 저장
+실행하기 전에 가상환경을 활성화하고 필요한 패키지가 설치되어 있어야 합니다.
 
 ---
 
-## 2. 주요 기능
-
-### AI 여행지 추천
-
-OpenAI API를 이용하여 여행 날짜와 조건에 적합한 여행지를 추천합니다.
-
-### 맛집 검색
-
-NAVER API HUB의 지역 검색 API를 이용하여 추천 여행지의 맛집 정보를 검색합니다.
-
-### 여행 계획 생성
-
-AI 추천 결과와 맛집 검색 결과를 결합하여 최종 여행 계획을 생성합니다.
-
-### 결과 저장
-
-생성된 여행 계획과 원본 데이터를 `results` 폴더에 저장할 수 있습니다.
-
----
-
-## 3. 사용 기술
-
-| 구분 | 기술 |
-|---|---|
-| Language | Python |
-| Web Framework | Flask |
-| CORS | Flask-CORS |
-| AI | OpenAI API |
-| 지역 검색 | NAVER API HUB |
-| HTTP 통신 | Requests |
-| 환경변수 | python-dotenv |
-| Version Control | Git / GitHub |
-
----
-
-## 4. 프로젝트 구조
-
-```text
-travel_planner/
-│
-├── app.py
-├── travel_planner.py
-├── requirements.txt
-├── README.md
-├── .env
-├── .gitignore
-│
-├── templates/
-│   └── ...
-│
-├── static/
-│   ├── css/
-│   └── js/
-│
-├── results/
-│   ├── YYYY-MM-DD_travel_plan.md
-│   └── YYYY-MM-DD_raw.json
-│
-└── venv/
-```
-
-※ 실제 프로젝트의 파일 및 폴더 구성에 따라 일부 항목은 다를 수 있습니다.
-
----
-
-## 5. 가상환경 생성
+### 6.1 가상환경 활성화
 
 프로젝트 폴더로 이동합니다.
 
@@ -99,19 +21,7 @@ travel_planner/
 cd C:\temp\travel_planner
 ```
 
-가상환경을 생성합니다.
-
-```powershell
-py -3.12 -m venv venv
-```
-
-PowerShell에서 스크립트 실행이 차단되는 경우 현재 PowerShell 세션에서만 실행을 허용합니다.
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-```
-
-가상환경을 활성화합니다.
+PowerShell에서 가상환경을 활성화합니다.
 
 ```powershell
 .\venv\Scripts\Activate.ps1
@@ -123,68 +33,57 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 (venv) PS C:\temp\travel_planner>
 ```
 
----
-
-## 6. 패키지 설치
-
-필요한 Python 패키지를 설치합니다.
+PowerShell 실행 정책으로 인해 활성화가 차단되는 경우 현재 세션에서만 실행을 허용합니다.
 
 ```powershell
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-`requirements.txt`
-
-```text
-Flask
-flask-cors
-requests
-python-dotenv
-openai
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\venv\Scripts\Activate.ps1
 ```
 
 ---
 
-## 7. 환경변수 설정
+### 6.2 콘솔 프로그램 실행
 
-프로젝트 루트 폴더에 `.env` 파일을 생성합니다.
+여행 날짜를 지정하여 Python 프로그램을 직접 실행할 수 있습니다.
 
-```env
-OPENAI_API_KEY=본인의_OPENAI_API_KEY
-
-NAVER_API_URL=https://naverapihub.apigw.ntruss.com/search/v1/local
-NAVER_CLIENT_ID=본인의_NAVER_CLIENT_ID
-NAVER_CLIENT_SECRET=본인의_NAVER_CLIENT_SECRET
+```powershell
+python travel_planner.py --date 2026-09-10
 ```
 
-### NAVER API HUB 인증 Header
-
-NAVER API HUB에서는 다음 Header를 사용합니다.
-
-```python
-headers = {
-    "X-NCP-APIGW-API-KEY-ID": NAVER_CLIENT_ID,
-    "X-NCP-APIGW-API-KEY": NAVER_CLIENT_SECRET
-}
-```
-
-기존 NAVER Developers API의
+실행 과정 예:
 
 ```text
-X-Naver-Client-Id
-X-Naver-Client-Secret
+[1/3] 1차 추천 생성 중(LLM)...
+    - recommended_city: 제주도
+
+[2/3] 맛집 검색 중(NAVER API HUB)...
+    - 맛집 검색 완료
+
+[3/3] 최종 리포트 생성 중(LLM)...
+    - 리포트 생성 완료
+
+완료!
 ```
 
-과 다르므로 주의해야 합니다.
+프로그램 실행 결과는 `results` 폴더에 저장됩니다.
+
+예:
+
+```text
+results/
+├── 2026-09-10_travel_plan.md
+└── 2026-09-10_raw.json
+```
 
 ---
 
-## 8. 프로그램 실행
+## 7. API 방식으로 실행하기
 
-### Flask 웹 애플리케이션 실행
+Travel Planner는 Flask를 이용하여 Backend API 서버로 실행할 수 있습니다.
 
-가상환경이 활성화된 상태에서 실행합니다.
+### 7.1 Flask API 서버 시작
+
+가상환경이 활성화된 상태에서 다음 명령을 실행합니다.
 
 ```powershell
 python app.py
@@ -196,89 +95,219 @@ python app.py
 .\venv\Scripts\python.exe app.py
 ```
 
-Flask 서버가 정상적으로 실행되면 터미널에 표시되는 로컬 주소로 접속합니다.
+정상적으로 실행되면 다음과 비슷한 메시지가 나타납니다.
 
-예:
+```text
+* Serving Flask app 'app'
+* Running on http://127.0.0.1:5000
+```
+
+이 상태에서는 Flask Backend 서버가 실행되고 있는 것입니다.
+
+> Flask 서버가 실행되는 동안 해당 PowerShell 창을 종료하지 않습니다.
+
+---
+
+### 7.2 API 호출 구조
+
+웹 화면에서 사용자가 여행 정보를 입력하면 JavaScript가 Flask API를 호출합니다.
+
+전체적인 처리 구조는 다음과 같습니다.
+
+```text
+[사용자]
+    │
+    ▼
+[웹 브라우저]
+HTML / CSS / JavaScript
+    │
+    │ HTTP Request
+    ▼
+[Flask API : app.py]
+    │
+    ├──── OpenAI API
+    │       │
+    │       └─ 여행지 추천 / 여행계획 생성
+    │
+    └──── NAVER API HUB
+            │
+            └─ 지역 / 맛집 검색
+    │
+    ▼
+[JSON Response]
+    │
+    ▼
+[웹 브라우저 결과 표시]
+```
+
+즉, Flask의 `app.py`는 웹 화면과 OpenAI/NAVER 외부 API 사이에서 Backend 역할을 수행합니다.
+
+---
+
+### 7.3 API 동작 확인
+
+Flask 서버가 실행 중인 상태에서 브라우저 또는 프로그램에서 `app.py`에 정의된 API Endpoint를 호출할 수 있습니다.
+
+예를 들어 API가 다음과 같이 구현되어 있다면:
+
+```python
+@app.route("/api/plan", methods=["POST"])
+def create_plan():
+    ...
+```
+
+API 주소는 다음과 같습니다.
+
+```text
+http://127.0.0.1:5000/api/plan
+```
+
+POST 방식으로 여행 정보를 전달하면 Flask가 요청을 받아 OpenAI와 NAVER API HUB를 호출하고 결과를 JSON으로 반환합니다.
+
+> 실제 API Endpoint 이름은 `app.py`에 정의된 Route를 기준으로 사용해야 합니다.
+
+---
+
+## 8. 웹 브라우저에서 실행하기
+
+### 8.1 Backend 서버 실행
+
+먼저 VS Code의 PowerShell에서 다음을 실행합니다.
+
+```powershell
+cd C:\temp\travel_planner
+.\venv\Scripts\Activate.ps1
+python app.py
+```
+
+다음 메시지가 나타나는지 확인합니다.
+
+```text
+* Running on http://127.0.0.1:5000
+```
+
+---
+
+### 8.2 웹 브라우저 접속
+
+Chrome, Edge 등의 웹 브라우저를 실행하고 Flask가 표시한 주소로 접속합니다.
 
 ```text
 http://127.0.0.1:5000
 ```
 
----
-
-## 9. 콘솔 프로그램 실행
-
-여행 날짜를 지정하여 실행할 경우:
-
-```powershell
-python travel_planner.py --date 2026-09-10
-```
-
-실행 과정 예시:
-
-```text
-[1/3] 1차 추천 생성 중(LLM)...
-    - recommended_city: 제주도
-
-[2/3] 맛집 검색 중(지도/장소 API)...
-    - 맛집 검색 완료
-
-[3/3] 최종 리포트 생성 중(LLM)...
-    - 리포트 생성 완료
-
-완료!
-```
+정상적으로 설정되어 있다면 Travel Planner의 웹 화면이 나타납니다.
 
 ---
 
-## 10. 결과 파일
+### 8.3 웹에서 여행 계획 생성
 
-프로그램에서 결과 저장 기능을 사용하는 경우 `results` 폴더에서 생성된 결과를 확인할 수 있습니다.
+웹 화면에서 여행 날짜와 필요한 여행 조건을 입력한 후 실행 버튼을 클릭합니다.
+
+처리 과정은 다음과 같습니다.
 
 ```text
-results/
-├── 2026-09-10_travel_plan.md
-└── 2026-09-10_raw.json
+① 사용자가 여행 조건 입력
+        ↓
+② 웹에서 Flask API 호출
+        ↓
+③ OpenAI가 여행지 추천
+        ↓
+④ NAVER API HUB에서 맛집 검색
+        ↓
+⑤ OpenAI가 최종 여행계획 생성
+        ↓
+⑥ 웹 화면에 결과 표시
 ```
 
-`travel_plan.md`는 최종 여행 계획이며,
-`raw.json`은 프로그램 처리 과정에서 생성된 원본 데이터입니다.
+API 호출에는 처리 시간이 필요하므로 AI 및 외부 API 응답이 완료될 때까지 잠시 기다립니다.
 
 ---
 
-## 11. NAVER API HUB
+## 9. 외부 API 연동
 
-지역 및 맛집 검색에는 NAVER API HUB의 지역 검색 API를 사용합니다.
+Travel Planner에서는 두 종류의 외부 API를 사용합니다.
 
-```text
-GET /search/v1/local
+### 9.1 OpenAI API
+
+OpenAI API는 다음 기능에 사용합니다.
+
+- 여행지 추천
+- 여행 조건 분석
+- 검색된 지역 정보 활용
+- 최종 여행계획 생성
+
+환경변수:
+
+```env
+OPENAI_API_KEY=본인의_OPENAI_API_KEY
 ```
 
-환경변수에는 다음 호출 URL을 설정합니다.
+---
+
+### 9.2 NAVER API HUB
+
+NAVER API HUB는 추천 여행지의 지역 및 맛집 정보를 검색하는 데 사용합니다.
+
+환경변수:
 
 ```env
 NAVER_API_URL=https://naverapihub.apigw.ntruss.com/search/v1/local
+NAVER_CLIENT_ID=본인의_NAVER_CLIENT_ID
+NAVER_CLIENT_SECRET=본인의_NAVER_CLIENT_SECRET
 ```
 
-주요 검색 파라미터 예시:
+NAVER API HUB 인증 Header:
 
 ```python
-params = {
-    "query": "제주 맛집",
-    "display": 5,
-    "start": 1,
-    "sort": "comment",
-    "format": "json"
+headers = {
+    "X-NCP-APIGW-API-KEY-ID": NAVER_CLIENT_ID,
+    "X-NCP-APIGW-API-KEY": NAVER_CLIENT_SECRET
 }
 ```
 
 ---
 
-## 12. 보안 주의사항
+## 10. API Key 보안 관리
 
-OpenAI API Key와 NAVER API HUB 인증정보는 GitHub에 업로드하면 안 됩니다.
+OpenAI API Key와 NAVER API HUB 인증정보는 프로그램 실행에 필요한 중요한 보안 정보입니다.
 
-`.gitignore`에 다음 내용을 추가합니다.
+API Key를 Python, HTML 또는 JavaScript 코드에 직접 작성하지 않습니다.
+
+특히 Frontend JavaScript에 다음과 같이 API Key를 작성하면 안 됩니다.
+
+```javascript
+// 잘못된 예
+const OPENAI_API_KEY = "실제_API_KEY";
+```
+
+웹 브라우저에서 실행되는 JavaScript 코드는 사용자가 확인할 수 있기 때문에 API Key가 노출될 수 있습니다.
+
+따라서 API Key는 반드시 Backend에서 관리합니다.
+
+```text
+[웹 브라우저]
+     │
+     │ API Key 없음
+     ▼
+[Flask Backend]
+     │
+     │ .env에서 API Key 로딩
+     ├──── OpenAI API
+     └──── NAVER API HUB
+```
+
+프로젝트 루트의 `.env` 파일에서 인증정보를 관리합니다.
+
+```env
+OPENAI_API_KEY=본인의_OPENAI_API_KEY
+
+NAVER_API_URL=https://naverapihub.apigw.ntruss.com/search/v1/local
+NAVER_CLIENT_ID=본인의_NAVER_CLIENT_ID
+NAVER_CLIENT_SECRET=본인의_NAVER_CLIENT_SECRET
+```
+
+그리고 `.gitignore`에 반드시 다음 내용을 포함합니다.
 
 ```gitignore
 .env
@@ -289,109 +318,94 @@ __pycache__/
 *.pyc
 ```
 
-GitHub에는 실제 API Key 대신 `.env.example` 파일을 제공하는 방법을 권장합니다.
-
-예:
-
-```env
-OPENAI_API_KEY=your_openai_api_key
-NAVER_API_URL=https://naverapihub.apigw.ntruss.com/search/v1/local
-NAVER_CLIENT_ID=your_naver_client_id
-NAVER_CLIENT_SECRET=your_naver_client_secret
-```
-
----
-
-## 13. GitHub 업데이트
-
-변경된 파일을 확인합니다.
+GitHub Push 전에는 반드시 확인합니다.
 
 ```powershell
 git status
 ```
 
-변경 내용을 추가합니다.
+`git status`에 `.env`가 나타나지 않는지 확인한 후 Push합니다.
 
-```powershell
-git add .
-```
-
-커밋합니다.
-
-```powershell
-git commit -m "Update travel planner and NAVER API HUB integration"
-```
-
-GitHub에 업로드합니다.
-
-```powershell
-git push origin main
-```
+> API Key가 GitHub 등에 노출된 경우 단순히 파일을 삭제하는 것만으로 끝내지 말고, 해당 API Key를 폐기한 후 새로운 Key를 발급받아야 합니다.
 
 ---
 
-## 14. 실행 오류 확인
+## 11. 결과물 확인 방법
 
-### Flask가 없는 경우
+### 웹 실행 결과
 
-```text
-ModuleNotFoundError: No module named 'flask'
-```
-
-해결:
-
-```powershell
-python -m pip install flask
-```
-
-### Flask-CORS가 없는 경우
+웹으로 실행한 경우 브라우저 화면에서 생성된 여행계획을 확인합니다.
 
 ```text
-ModuleNotFoundError: No module named 'flask_cors'
+사용자 여행조건
+      ↓
+AI 추천 여행지
+      ↓
+NAVER 맛집 검색
+      ↓
+최종 여행계획
 ```
 
-해결:
+### 파일 저장 결과
 
-```powershell
-python -m pip install flask-cors
-```
-
-### Requests가 없는 경우
+파일 저장 기능을 사용하는 경우 `results` 폴더에서 확인합니다.
 
 ```text
-ModuleNotFoundError: No module named 'requests'
+results/
+├── 2026-09-10_travel_plan.md
+└── 2026-09-10_raw.json
 ```
 
-해결:
+`travel_plan.md`
 
-```powershell
-python -m pip install requests
-```
+- AI가 생성한 최종 여행 계획
+- 추천 여행지
+- 여행 추천 내용
+- 맛집 정보
+- 최종 일정
 
-개별적으로 설치하기보다는 다음 명령으로 필요한 패키지를 한 번에 설치하는 것을 권장합니다.
+`raw.json`
 
-```powershell
-python -m pip install -r requirements.txt
-```
+- OpenAI/NAVER API 처리에 사용된 원본 데이터
+- 프로그램 개발 및 오류 확인용 데이터
 
 ---
 
-## 15. 프로젝트 목표
+## 12. 실행 방법 요약
 
-이 프로젝트는 다음 내용을 학습하고 구현하는 것을 목표로 합니다.
+### 웹으로 실행
 
-- Python 기반 웹 애플리케이션 개발
-- Flask를 이용한 Backend 구현
-- OpenAI API 연동
-- NAVER API HUB 외부 API 연동
-- `.env`를 이용한 API Key 관리
-- JSON 데이터 처리
-- AI와 외부 검색 데이터의 결합
-- Git/GitHub를 이용한 버전 관리
-- 가상환경을 이용한 Python 개발환경 관리
+```powershell
+cd C:\temp\travel_planner
+.\venv\Scripts\Activate.ps1
+python app.py
+```
 
----
+브라우저 접속:
 
-## License
+```text
+http://127.0.0.1:5000
+```
 
-본 프로젝트는 학습 및 실습 목적으로 제작되었습니다.
+### 콘솔로 실행
+
+```powershell
+python travel_planner.py --date 2026-09-10
+```
+
+### 프로그램 종료
+
+Flask 서버가 실행 중인 PowerShell에서:
+
+```text
+Ctrl + C
+```
+
+가상환경 종료:
+
+```powershell
+deactivate
+```
+````
+
+
