@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>오늘의 국내 여행 답변</title>
+  <style>
+    :root {
+      --ink: #17241f;
+      --muted: #68756e;
+      --paper: #f6f4ee;
+      --white: #fffefa;
+      --line: #dfe5dd;
+      --green: #1f684d;
+      --green-dark: #164d3a;
+      --yellow: #f2c566;
+      --coral: #d97b5f;
+      --shadow: 0 20px 50px rgba(31, 55, 43, .11);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Georgia, "Noto Serif KR", serif;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: 8px;
+      background: var(--coral);
+      z-index: 2;
+    }
+    button, input { font: inherit; }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 35px 0 26px;
+    }
+    .brand { color: var(--green-dark); font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
+    .mark { display: inline-block; width: 12px; height: 12px; margin-right: 8px; background: var(--yellow); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); }
+    .status { color: var(--muted); font: 600 .76rem/1.2 Arial, sans-serif; letter-spacing: .09em; text-transform: uppercase; }
+    .hero { padding: 58px 0 64px; display: grid; grid-template-columns: 1fr 390px; gap: 80px; align-items: end; }
+    .eyebrow { color: var(--coral); font: 700 .78rem/1.2 Arial, sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { max-width: 650px; margin: 16px 0 20px; font-size: clamp(2.7rem, 6vw, 5.2rem); line-height: .98; letter-spacing: -.055em; }
+    .intro { max-width: 560px; margin: 0; color: var(--muted); font-size: 1.1rem; line-height: 1.75; }
+    .question-box { padding: 25px; background: var(--white); border: 1px solid var(--line); border-radius: 3px; box-shadow: var(--shadow); }
+    .question-box label { display: block; margin-bottom: 10px; color: var(--muted); font: 700 .76rem/1.2 Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+    .date-row { display: flex; gap: 10px; }
+    input[type="date"] { min-width: 0; flex: 1; padding: 13px 12px; color: var(--ink); background: #fbfaf6; border: 1px solid var(--line); border-radius: 2px; }
+    button { padding: 13px 17px; color: white; background: var(--green); border: 0; border-radius: 2px; cursor: pointer; font: 700 .88rem/1 Arial, sans-serif; transition: background .2s, transform .2s; }
+    button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    button:disabled { opacity: .65; cursor: wait; transform: none; }
+    .hint { margin: 12px 0 0; color: var(--muted); font: .75rem/1.4 Arial, sans-serif; }
+    .answer { display: none; padding: 50px 0 80px; border-top: 1px solid var(--line); animation: appear .55s ease both; }
+    .answer.visible { display: block; }
+    .answer-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 25px; }
+    .answer-head h2 { margin: 8px 0 0; font-size: 2rem; letter-spacing: -.04em; }
+    .question-chip { color: var(--muted); font: .82rem/1.4 Arial, sans-serif; }
+    .summary { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .panel { padding: 25px; background: var(--white); border: 1px solid var(--line); }
+    .panel.accent { color: white; background: var(--green); border-color: var(--green); }
+    .panel-label { margin-bottom: 14px; color: var(--muted); font: 700 .7rem/1.2 Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; }
+    .accent .panel-label { color: #b8d6c6; }
+    .panel h3 { margin: 0; font-size: 1.65rem; letter-spacing: -.04em; }
+    .panel p { margin: 0; line-height: 1.7; }
+    .lower { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .events { margin: 0; padding-left: 19px; line-height: 1.9; }
+    .restaurants { display: grid; gap: 12px; }
+    .restaurant { padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .restaurant:last-child { padding-bottom: 0; border-bottom: 0; }
+    .restaurant strong { display: block; margin-bottom: 4px; }
+    .restaurant small { color: var(--muted); font: .79rem/1.5 Arial, sans-serif; }
+    .report { margin-top: 14px; }
+    .report-content { color: #35443c; line-height: 1.8; white-space: pre-wrap; }
+    .report-content h3 { margin: 22px 0 5px; color: var(--green-dark); font-size: 1.15rem; }
+    .error { display: none; margin-top: 18px; padding: 13px 15px; color: #9b4936; background: #fff0eb; border: 1px solid #f0c5b7; font: .86rem/1.5 Arial, sans-serif; }
+    .error.visible { display: block; }
+    @keyframes appear { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 28px, 600px); }
+      header { padding-top: 27px; }
+      .status { display: none; }
+      .hero { padding: 42px 0 50px; display: block; }
+      h1 { font-size: clamp(2.65rem, 14vw, 4.4rem); }
+      .question-box { margin-top: 34px; }
+      .date-row { display: grid; grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .answer-head, .summary, .lower { display: block; }
+      .question-chip { margin-top: 15px; }
+      .panel { margin-bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="mark"></span>여행의 결</div>
+      <div class="status">Domestic travel companion</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">A considered answer for your next day</div>
+          <h1>어디로 떠날지,<br />오늘 정해볼까요?</h1>
+          <p class="intro">여행 날짜를 남겨주시면 날씨와 계절감을 고려해 한 곳을 고르고, 그곳에서의 하루까지 정리해드릴게요.</p>
+        </div>
+        <form class="question-box" id="plan-form">
+          <label for="travel-date">질문 · 언제 떠나나요?</label>
+          <div class="date-row">
+            <input id="travel-date" type="date" required />
+            <button id="submit-button" type="submit">답변 받기</button>
+          </div>
+          <p class="hint">추천 지역, 날씨, 행사와 주변 맛집을 함께 찾아요.</p>
+        </form>
+      </section>
+
+      <section class="answer" id="answer" aria-live="polite">
+        <div class="answer-head">
+          <div>
+            <div class="eyebrow">Your travel answer</div>
+            <h2 id="answer-title">여행 답변</h2>
+          </div>
+          <div class="question-chip" id="question-chip"></div>
+        </div>
+        <div class="summary">
+          <article class="panel accent">
+            <div class="panel-label">추천 지역</div>
+            <h3 id="city">-</h3>
+          </article>
+          <article class="panel">
+            <div class="panel-label">날씨 요약</div>
+            <p id="weather">-</p>
+          </article>
+          <article class="panel">
+            <div class="panel-label">추천 이유</div>
+            <p id="reason">-</p>
+          </article>
+        </div>
+        <div class="lower">
+          <article class="panel">
+            <div class="panel-label">행사와 축제</div>
+            <ul class="events" id="events"><li>정보를 불러오는 중입니다.</li></ul>
+          </article>
+          <article class="panel">
+            <div class="panel-label">현지에서 들를 곳</div>
+            <div class="restaurants" id="restaurants"><p>정보를 불러오는 중입니다.</p></div>
+          </article>
+        </div>
+        <article class="panel report">
+          <div class="panel-label">하루의 답변</div>
+          <div class="report-content" id="report">리포트를 불러오는 중입니다.</div>
+        </article>
+      </section>
+      <div class="error" id="error" role="alert"></div>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById('plan-form');
+    const dateInput = document.getElementById('travel-date');
+    const submitButton = document.getElementById('submit-button');
+    const answer = document.getElementById('answer');
+    const error = document.getElementById('error');
+
+    dateInput.value = new Date().toISOString().slice(0, 10);
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value || '정보 없음';
+    }
+
+    function showRestaurants(items) {
+      const container = document.getElementById('restaurants');
+      container.innerHTML = '';
+      if (!items || !items.length) {
+        container.innerHTML = '<p>검색된 장소가 없습니다.</p>';
+        return;
+      }
+      items.forEach((item) => {
+        const place = document.createElement('div');
+        place.className = 'restaurant';
+        const name = document.createElement('strong');
+        name.textContent = item.name || '이름 없음';
+        const detail = document.createElement('small');
+        detail.textContent = [item.category, item.address].filter(Boolean).join(' · ') || '상세 정보 없음';
+        place.append(name, detail);
+        container.appendChild(place);
+      });
+    }
+
+    function showAnswer(data, date) {
+      const recommendation = data.recommendation || {};
+      setText('answer-title', `${date} 여행 답변`);
+      setText('question-chip', `질문 · ${date}에 어디로 떠날까요?`);
+      setText('city', recommendation.recommended_city);
+      setText('weather', recommendation.weather);
+      setText('reason', recommendation.reason);
+      const events = document.getElementById('events');
+      events.innerHTML = '';
+      (recommendation.events || ['등록된 행사가 없습니다.']).forEach((event) => {
+        const item = document.createElement('li');
+        item.textContent = event;
+        events.appendChild(item);
+      });
+      showRestaurants(data.restaurants);
+      document.getElementById('report').textContent = data.report_md || '리포트가 없습니다.';
+      answer.classList.add('visible');
+      answer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const date = dateInput.value;
+      if (!date) return;
+      error.classList.remove('visible');
+      submitButton.disabled = true;
+      submitButton.textContent = '답변 준비 중';
+      try {
+        const response = await fetch(`/api/plan?date=${encodeURIComponent(date)}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || data.error || '답변을 불러오지 못했습니다.');
+        showAnswer(data, date);
+      } catch (err) {
+        error.textContent = `오류: ${err.message}`;
+        error.classList.add('visible');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = '답변 받기';
+      }
+    });
+  </script>
+</body>
+</html>

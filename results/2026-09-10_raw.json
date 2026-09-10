@@ -1,0 +1,54 @@
+{
+  "recommendation": {
+    "recommended_city": "가평",
+    "weather": "9월은 가평에서 가을의 시작을 느낄 수 있는 시기로, 맑고 선선한 날씨가 계속됩니다.",
+    "events": [
+      "가평 잣축제",
+      "가평 물축제"
+    ],
+    "reason": "가평은 아름다운 자연경관과 함께 다양한 축제가 열리는 지역입니다. 9월에는 가을을 맞아 잣축제와 물축제가 열려 풍성한 볼거리를 제공합니다. 또한, 선선한 날씨는 야외 활동을 즐기기에 안성맞춤입니다."
+  },
+  "restaurants": [
+    {
+      "name": "어파인하우스",
+      "address": "경기도 가평군 설악면 유명로 1649 어파인하우스(apine.house)",
+      "category": "브런치카페",
+      "url": "https://www.instagram.com/apine.house",
+      "lat": "376765022",
+      "lng": "1274854341"
+    },
+    {
+      "name": "남이섬꼬꼬춘천닭갈비",
+      "address": "경기도 가평군 가평읍 북한강변로 1045 남이섬꼬꼬춘천닭갈비",
+      "category": "한식>닭갈비",
+      "url": "https://smartstore.naver.com/nccdgb",
+      "lat": "378059024",
+      "lng": "1275249167"
+    },
+    {
+      "name": "가평맛집삼삼조약돌숯불닭갈비 본점",
+      "address": "경기도 가평군 청평면 여울길 52",
+      "category": "한식>닭갈비",
+      "url": "",
+      "lat": "377354750",
+      "lng": "1274185533"
+    },
+    {
+      "name": "누마우동 가평본점",
+      "address": "경기도 가평군 청평면 대성강변길 44 1층",
+      "category": "음식점>일식>우동,소바",
+      "url": "https://www.instagram.com/numa.udon?igsh=cGk2bG00MGIzN3Ft",
+      "lat": "376800516",
+      "lng": "1273794832"
+    },
+    {
+      "name": "금계닭갈비 가평본점",
+      "address": "경기도 가평군 설악면 유명로 1614 1층",
+      "category": "한식>닭갈비",
+      "url": "https://blog.naver.com/geumgyedalggalbi",
+      "lat": "376735454",
+      "lng": "1274873240"
+    }
+  ],
+  "errors": []
+}
