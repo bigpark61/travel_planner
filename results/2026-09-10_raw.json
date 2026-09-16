@@ -1,6 +1,5 @@
 {
   "recommendation": {
-<<<<<<< HEAD
     "recommended_city": "강릉",
     "weather": "9월의 강릉은 온화하고 쾌적한 날씨로, 낮에는 따뜻하지만 아침저녁으로 선선한 기온이 특징입니다.",
     "events": [
@@ -49,32 +48,7 @@
       "url": "",
       "lat": "378011131",
       "lng": "1289117764"
-=======
-    "recommended_city": "부산",
-    "weather": "9월은 쾌청하고 온화하며 해안가 바람이 선선함",
-    "events": [
-      "해운대 가을 축제",
-      "부산국제영화제"
-    ],
-    "reason": "해변, 음식, 접근성이 좋아 가을 여행지로 적합합니다."
-  },
-  "restaurants": [
-    {
-      "name": "모범횟집",
-      "address": "부산 해운대구",
-      "category": "해산물",
-      "url": "http://example.com",
-      "lat": 35.163,
-      "lng": 129.163
-    },
-    {
-      "name": "달맞이카페",
-      "address": "부산 달맞이길",
-      "category": "카페",
-      "url": "http://example.com",
-      "lat": 35.165,
-      "lng": 129.169
->>>>>>> 1abd5d0 (2개 이상 여행지 추천)
+    }
     }
   ],
   "errors": []
