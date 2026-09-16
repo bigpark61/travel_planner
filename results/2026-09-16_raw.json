@@ -1,0 +1,75 @@
+{
+  "schema": {
+    "recommendation": "recommended_cities, weather, events, reason"
+  },
+  "recommendation": {
+    "recommended_cities": [
+      "부산",
+      "강릉",
+      "제주"
+    ],
+    "weather": "9월은 쾌청하고 온화하며 해안가 바람이 선선함",
+    "events": [
+      "해운대 가을 축제",
+      "부산국제영화제"
+    ],
+    "reason": "해변, 음식, 접근성이 좋아 가을 여행지로 적합합니다."
+  },
+  "restaurants_by_city": {
+    "부산": [
+      {
+        "name": "부산 모범횟집",
+        "address": "부산 대표 맛집 거리",
+        "category": "해산물",
+        "url": "http://example.com",
+        "lat": 35.163,
+        "lng": 129.163
+      },
+      {
+        "name": "부산 달맞이카페",
+        "address": "부산 관광지 인근",
+        "category": "카페",
+        "url": "http://example.com",
+        "lat": 35.165,
+        "lng": 129.169
+      }
+    ],
+    "강릉": [
+      {
+        "name": "강릉 모범횟집",
+        "address": "강릉 대표 맛집 거리",
+        "category": "해산물",
+        "url": "http://example.com",
+        "lat": 35.163,
+        "lng": 129.163
+      },
+      {
+        "name": "강릉 달맞이카페",
+        "address": "강릉 관광지 인근",
+        "category": "카페",
+        "url": "http://example.com",
+        "lat": 35.165,
+        "lng": 129.169
+      }
+    ],
+    "제주": [
+      {
+        "name": "제주 모범횟집",
+        "address": "제주 대표 맛집 거리",
+        "category": "해산물",
+        "url": "http://example.com",
+        "lat": 35.163,
+        "lng": 129.163
+      },
+      {
+        "name": "제주 달맞이카페",
+        "address": "제주 관광지 인근",
+        "category": "카페",
+        "url": "http://example.com",
+        "lat": 35.165,
+        "lng": 129.169
+      }
+    ]
+  },
+  "errors": []
+}

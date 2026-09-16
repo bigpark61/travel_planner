@@ -1,0 +1,148 @@
+{
+  "schema": {
+    "recommendation": "recommended_cities, weather, events, reason"
+  },
+  "recommendation": {
+    "recommended_cities": [
+      "가평",
+      "부산",
+      "전주"
+    ],
+    "weather": "가을철로 맑고 쾌적한 날씨가 이어지며, 아침과 저녁은 서늘할 수 있습니다.",
+    "events": [
+      "가평 잣 축제",
+      "부산 불꽃축제",
+      "전주 국제 영화제"
+    ],
+    "reason": "10월은 가을의 정취를 만끽하기 좋은 시기로, 단풍이 아름답게 물드는 시점입니다. 가평에서는 산과 호수를 즐기며 잣 축제를 경험할 수 있고, 부산에서는 화려한 불꽃놀이를 감상할 수 있습니다. 전주는 맛있고 다양한 전통 음식을 즐길 수 있는 기회가 많아 여행자들에게 매력적인 도시입니다."
+  },
+  "restaurants_by_city": {
+    "가평": [
+      {
+        "name": "남이섬꼬꼬춘천닭갈비",
+        "address": "경기도 가평군 가평읍 북한강변로 1045 남이섬꼬꼬춘천닭갈비",
+        "category": "한식>닭갈비",
+        "url": "https://smartstore.naver.com/nccdgb",
+        "x": 1275249167.0,
+        "y": 378059024.0
+      },
+      {
+        "name": "가평맛집삼삼조약돌숯불닭갈비 본점",
+        "address": "경기도 가평군 청평면 여울길 52",
+        "category": "한식>닭갈비",
+        "url": "",
+        "x": 1274185533.0,
+        "y": 377354750.0
+      },
+      {
+        "name": "어파인하우스",
+        "address": "경기도 가평군 설악면 유명로 1649 어파인하우스(apine.house)",
+        "category": "브런치카페",
+        "url": "https://www.instagram.com/apine.house",
+        "x": 1274854341.0,
+        "y": 376765022.0
+      },
+      {
+        "name": "누마우동 가평본점",
+        "address": "경기도 가평군 청평면 대성강변길 44 1층",
+        "category": "음식점>일식>우동,소바",
+        "url": "https://www.instagram.com/numa.udon?igsh=cGk2bG00MGIzN3Ft",
+        "x": 1273794832.0,
+        "y": 376800516.0
+      },
+      {
+        "name": "설악막국수 춘천닭갈비 본점",
+        "address": "경기도 가평군 설악면 신천중앙로 159 설악막국수춘천닭갈비",
+        "category": "음식점>한식",
+        "url": "https://smartstore.naver.com/seorakbi",
+        "x": 1274862358.0,
+        "y": 376776296.0
+      }
+    ],
+    "부산": [
+      {
+        "name": "미미순두부 서면점",
+        "address": "부산광역시 부산진구 서면로 35 1층",
+        "category": "한식>두부요리",
+        "url": "https://www.instagram.com/mimi.soondubu/",
+        "x": 1290575856.0,
+        "y": 351538432.0
+      },
+      {
+        "name": "어쭈 서면본점",
+        "address": "부산광역시 부산진구 서면로 26 1층 어쭈",
+        "category": "한식>주꾸미요리",
+        "url": "https://app.catchtable.co.kr/ct/shop/uzzoo",
+        "x": 1290580069.0,
+        "y": 351531019.0
+      },
+      {
+        "name": "스페이스 원지",
+        "address": "부산광역시 영도구 봉래나루로 214 스페이스 원지",
+        "category": "음식점>양식",
+        "url": "https://blog.naver.com/shern0307_",
+        "x": 1290445707.0,
+        "y": 350966493.0
+      },
+      {
+        "name": "서면금돼지",
+        "address": "부산광역시 부산진구 동천로95번길 11 1층",
+        "category": "한식>육류,고기요리",
+        "url": "",
+        "x": 1290616405.0,
+        "y": 351571707.0
+      },
+      {
+        "name": "디에이블 광안점",
+        "address": "부산광역시 수영구 민락수변로 29 3층 디에이블",
+        "category": "음식점>양식",
+        "url": "https://catchtable.co.kr/the_8ble",
+        "x": 1291246271.0,
+        "y": 351534126.0
+      }
+    ],
+    "전주": [
+      {
+        "name": "탐라수산",
+        "address": "전북특별자치도 전주시 덕진구 백석로 62 탐라수산",
+        "category": "한식>생선회",
+        "url": "https://band.us/@tamra2777",
+        "x": 1271384645.0,
+        "y": 358741347.0
+      },
+      {
+        "name": "호시마츠생라멘",
+        "address": "전북특별자치도 전주시 완산구 전주객사2길 46-12",
+        "category": "음식점>일식>일본식라면",
+        "url": "https://www.instagram.com/hosimatsu_official/",
+        "x": 1271414487.0,
+        "y": 358190438.0
+      },
+      {
+        "name": "반도 한식주점",
+        "address": "전북특별자치도 전주시 완산구 전주객사2길 12-3 1층",
+        "category": "술집>요리주점",
+        "url": "https://www.instagram.com/bando_gaeksa",
+        "x": 1271415023.0,
+        "y": 358176171.0
+      },
+      {
+        "name": "자매갈비전골",
+        "address": "전북특별자치도 전주시 완산구 기린대로 121 자매갈비전골",
+        "category": "한식>육류,고기요리",
+        "url": "https://www.instagram.com/jamae_1998_",
+        "x": 1271534531.0,
+        "y": 358198432.0
+      },
+      {
+        "name": "생활맥주 전주객리단길점",
+        "address": "전북특별자치도 전주시 완산구 전주객사2길 28-3 생활맥주",
+        "category": "술집>맥주,호프",
+        "url": "",
+        "x": 1271410310.0,
+        "y": 358182807.0
+      }
+    ]
+  },
+  "errors": []
+}
