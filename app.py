@@ -65,6 +65,7 @@ def plan_route():
     if not date:
         return jsonify({"error": "date parameter is required (YYYY-MM-DD)"}), 400
 
+    tp.reset_errors()
     dry = request.args.get("dry_run", "0")
     tp.DRY_RUN = dry.lower() in ("1", "true", "yes")
 
@@ -75,26 +76,29 @@ def plan_route():
         tp.log_error("api.plan", "LLM_ERROR", str(e))
         return jsonify({"error": "LLM recommendation failed", "detail": str(e)}), 500
 
-    # Search restaurants
+    # Search restaurants for every recommended city.
+    restaurants_by_city = {}
     try:
-        restaurants = tp.search_restaurants(recommendation.get("recommended_city", ""))
+        for city in recommendation.get("recommended_cities", []):
+            restaurants_by_city[city] = tp.search_restaurants(city)
     except Exception as e:
         tp.log_error("api.plan", "SEARCH_ERROR", str(e))
-        restaurants = []
+        restaurants_by_city[city] = []
 
     # Generate report (LLM or dry-run)
     try:
-        report_md = tp.generate_report(date, recommendation, restaurants)
+        report_md = tp.generate_report(date, recommendation, restaurants_by_city)
     except Exception as e:
         tp.log_error("api.plan", "REPORT_ERROR", str(e))
         report_md = tp.append_error_section(f"# {date} 국내 여행 추천 리포트\n\n리포트 생성 실패: {e}\n")
 
+    report_md = tp.append_error_section(report_md)
     # Save results
-    json_path, md_path = tp.save_results(date, recommendation, restaurants, report_md)
+    json_path, md_path = tp.save_results(date, recommendation, restaurants_by_city, report_md)
 
     return jsonify({
         "recommendation": recommendation,
-        "restaurants": restaurants,
+        "restaurants_by_city": restaurants_by_city,
         "report_md": report_md,
         "json_path": json_path,
         "md_path": md_path,

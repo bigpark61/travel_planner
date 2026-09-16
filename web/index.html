@@ -116,7 +116,7 @@
             <input id="travel-date" type="date" required />
             <button id="submit-button" type="submit">답변 받기</button>
           </div>
-          <p class="hint">추천 지역, 날씨, 행사와 주변 맛집을 함께 찾아요.</p>
+          <p class="hint" id="request-status">추천 지역, 날씨, 행사와 주변 맛집을 함께 찾아요.</p>
         </form>
       </section>
 
@@ -165,6 +165,7 @@
     const form = document.getElementById('plan-form');
     const dateInput = document.getElementById('travel-date');
     const submitButton = document.getElementById('submit-button');
+    const requestStatus = document.getElementById('request-status');
     const answer = document.getElementById('answer');
     const error = document.getElementById('error');
 
@@ -174,22 +175,35 @@
       document.getElementById(id).textContent = value || '정보 없음';
     }
 
-    function showRestaurants(items) {
+    function showRestaurantsByCity(itemsByCity) {
       const container = document.getElementById('restaurants');
       container.innerHTML = '';
-      if (!items || !items.length) {
-        container.innerHTML = '<p>검색된 장소가 없습니다.</p>';
+      const cities = Object.keys(itemsByCity || {});
+      if (!cities.length) {
+        container.innerHTML = '<p>검색된 지역이 없습니다.</p>';
         return;
       }
-      items.forEach((item) => {
-        const place = document.createElement('div');
-        place.className = 'restaurant';
-        const name = document.createElement('strong');
-        name.textContent = item.name || '이름 없음';
-        const detail = document.createElement('small');
-        detail.textContent = [item.category, item.address].filter(Boolean).join(' · ') || '상세 정보 없음';
-        place.append(name, detail);
-        container.appendChild(place);
+      cities.forEach((city) => {
+        const heading = document.createElement('h3');
+        heading.textContent = city;
+        container.appendChild(heading);
+        const items = itemsByCity[city] || [];
+        if (!items.length) {
+          const empty = document.createElement('p');
+          empty.textContent = '데이터 없음';
+          container.appendChild(empty);
+          return;
+        }
+        items.forEach((item) => {
+          const place = document.createElement('div');
+          place.className = 'restaurant';
+          const name = document.createElement('strong');
+          name.textContent = item.name || '이름 없음';
+          const detail = document.createElement('small');
+          detail.textContent = [item.category, item.address].filter(Boolean).join(' · ') || '상세 정보 없음';
+          place.append(name, detail);
+          container.appendChild(place);
+        });
       });
     }
 
@@ -197,7 +211,7 @@
       const recommendation = data.recommendation || {};
       setText('answer-title', `${date} 여행 답변`);
       setText('question-chip', `질문 · ${date}에 어디로 떠날까요?`);
-      setText('city', recommendation.recommended_city);
+      setText('city', (recommendation.recommended_cities || []).join(' · '));
       setText('weather', recommendation.weather);
       setText('reason', recommendation.reason);
       const events = document.getElementById('events');
@@ -207,7 +221,7 @@
         item.textContent = event;
         events.appendChild(item);
       });
-      showRestaurants(data.restaurants);
+      showRestaurantsByCity(data.restaurants_by_city);
       document.getElementById('report').textContent = data.report_md || '리포트가 없습니다.';
       answer.classList.add('visible');
       answer.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -219,7 +233,8 @@
       if (!date) return;
       error.classList.remove('visible');
       submitButton.disabled = true;
-      submitButton.textContent = '답변 준비 중';
+      submitButton.textContent = '맛집 검색 중';
+      requestStatus.textContent = '맛집 검색 중(지도/장소 API)';
       try {
         const response = await fetch(`/api/plan?date=${encodeURIComponent(date)}`);
         const data = await response.json();
@@ -231,6 +246,7 @@
       } finally {
         submitButton.disabled = false;
         submitButton.textContent = '답변 받기';
+        requestStatus.textContent = '추천 지역, 날씨, 행사와 주변 맛집을 함께 찾아요.';
       }
     });
   </script>

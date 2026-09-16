@@ -20,6 +20,8 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 NAVER_API_KEY_ID = os.getenv("NCP_APIGW_API_KEY_ID") or os.getenv("NAVER_CLIENT_ID")
 NAVER_API_KEY = os.getenv("NCP_APIGW_API_KEY") or os.getenv("NAVER_CLIENT_SECRET")
+NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID")
+NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
 NAVER_API_URL = os.getenv("NAVER_API_URL")
 USE_NAVER_API_HUB = bool(
     os.getenv("NCP_APIGW_API_KEY_ID") or os.getenv("NCP_APIGW_API_KEY")
@@ -43,12 +45,16 @@ def log_error(step: str, err_type: str, message: str) -> None:
     errors.append({"step": step, "type": err_type, "message": message})
 
 
+def reset_errors() -> None:
+    errors.clear()
+
+
 # ---------------------------------------------------------------------------
 # 4단계: CLI 인터페이스
 # ---------------------------------------------------------------------------
 def parse_args() -> tuple[str, bool]:
     parser = argparse.ArgumentParser(description="국내 여행지 추천 프로그램")
-    parser.add_argument("--date", required=True, help='여행 날짜, 예: --date "2026-03-15"')
+    parser.add_argument("-date", "--date", required=True, help='여행 날짜, 예: -date "2026-03-15"')
     parser.add_argument("--dry-run", action="store_true", help="외부 API 호출 없이 모의 실행합니다.")
     args = parser.parse_args()
 
@@ -57,8 +63,8 @@ def parse_args() -> tuple[str, bool]:
     try:
         datetime.strptime(args.date, "%Y-%m-%d")
     except ValueError:
-        parser.print_usage(sys.stderr)
         print('오류: 날짜 형식이 올바르지 않습니다. 예: --date "2026-03-15"', file=sys.stderr)
+        parser.print_usage(sys.stderr)
         sys.exit(1)
 
     return args.date, args.dry_run
@@ -72,8 +78,11 @@ def check_api_keys() -> None:
     missing = []
     if not OPENAI_API_KEY:
         missing.append("OPENAI_API_KEY")
-    if not NAVER_API_KEY_ID or not NAVER_API_KEY:
-        missing.append("NCP_APIGW_API_KEY_ID / NCP_APIGW_API_KEY")
+    if not (
+        (os.getenv("NCP_APIGW_API_KEY_ID") and os.getenv("NCP_APIGW_API_KEY"))
+        or (NAVER_CLIENT_ID and NAVER_CLIENT_SECRET)
+    ):
+        missing.append("NCP_APIGW_API_KEY_ID/NCP_APIGW_API_KEY 또는 NAVER_CLIENT_ID/NAVER_CLIENT_SECRET")
     if not NAVER_API_URL:
         missing.append("NAVER_API_URL")
 
@@ -81,8 +90,8 @@ def check_api_keys() -> None:
         print(f"오류: 다음 API 키가 설정되지 않았습니다 -> {', '.join(missing)}")
         print('설정 방법: 프로젝트 루트에 .env 파일을 만들고 아래처럼 키를 추가하세요.')
         print('  OPENAI_API_KEY=sk-...')
-        print('  NCP_APIGW_API_KEY_ID=...')
-        print('  NCP_APIGW_API_KEY=...')
+        print('  NCP_APIGW_API_KEY_ID=...  (또는 NAVER_CLIENT_ID=...)')
+        print('  NCP_APIGW_API_KEY=...     (또는 NAVER_CLIENT_SECRET=...)')
         print('  NAVER_API_URL=https://콘솔에서_발급받은_호출_URL')
         sys.exit(1)
 
@@ -124,10 +133,27 @@ def extract_json(text: str) -> dict:
     return json.loads(match.group(0))
 
 
+def validate_recommendation(data: object) -> dict:
+    if not isinstance(data, dict):
+        raise ValueError("추천 결과가 JSON 객체가 아닙니다.")
+    if any(key not in data for key in REQUIRED_KEYS):
+        raise ValueError(f"필수 키 누락: {REQUIRED_KEYS}")
+    cities = data["recommended_cities"]
+    if not isinstance(cities, list) or not 2 <= len(cities) <= 3 or not all(
+        isinstance(city, str) and city.strip() for city in cities
+    ):
+        raise ValueError("recommended_cities는 2~3개의 지역명 문자열 배열이어야 합니다.")
+    if not isinstance(data["weather"], str) or not isinstance(data["reason"], str):
+        raise ValueError("weather와 reason은 문자열이어야 합니다.")
+    if not isinstance(data["events"], list) or not all(isinstance(event, str) for event in data["events"]):
+        raise ValueError("events는 문자열 배열이어야 합니다.")
+    return data
+
+
 # ---------------------------------------------------------------------------
 # 5단계: 1차 추천(LLM) - 날씨/행사 정보
 # ---------------------------------------------------------------------------
-REQUIRED_KEYS = ["recommended_city", "weather", "events", "reason"]
+REQUIRED_KEYS = ["recommended_cities", "weather", "events", "reason"]
 
 # When True, skip real API calls and return canned responses for safe testing
 DRY_RUN = False
@@ -137,16 +163,16 @@ def get_recommendation(travel_date: str) -> dict:
     global DRY_RUN
     if DRY_RUN:
         return {
-            "recommended_city": "부산",
+            "recommended_cities": ["부산", "강릉", "제주"],
             "weather": "9월은 쾌청하고 온화하며 해안가 바람이 선선함",
             "events": ["해운대 가을 축제", "부산국제영화제"],
             "reason": "해변, 음식, 접근성이 좋아 가을 여행지로 적합합니다.",
         }
     system_prompt = (
         "너는 국내 여행 추천 전문가다. 사용자가 입력한 날짜를 기준으로 "
-        "여행하기 좋은 국내 지역 1곳을 추천한다.\n"
+        "여행하기 좋은 국내 지역 2~3곳을 추천한다.\n"
         "다른 설명, 인사말, 코드블록 표시(```) 없이 아래 JSON 스키마만 정확히 출력하라.\n"
-        '{"recommended_city": "지역명(string)", '
+        '{"recommended_cities": ["지역명1(string)", "지역명2(string)"], '
         '"weather": "해당 시기 일반적 날씨 요약(string)", '
         '"events": ["행사/축제 후보 1~3개(string)"], '
         '"reason": "추천 근거 2~4문장(string)"}'
@@ -157,9 +183,7 @@ def get_recommendation(travel_date: str) -> dict:
         try:
             raw = call_llm(prompt, system=system_prompt)
             data = extract_json(raw)
-            if not all(key in data for key in REQUIRED_KEYS):
-                raise ValueError(f"필수 키 누락: {REQUIRED_KEYS}")
-            return data
+            return validate_recommendation(data)
         except Exception as e:
             if attempt == 0:
                 print(f"    - JSON 파싱 실패, 재시도합니다... ({e})")
@@ -174,7 +198,7 @@ def get_recommendation(travel_date: str) -> dict:
             log_error("recommendation", "PARSE_ERROR", str(e))
             print(f"    - 오류: 추천 결과 파싱에 최종 실패했습니다({e}). 기본값으로 진행합니다.")
             return {
-                "recommended_city": "정보 없음",
+                "recommended_cities": ["정보 없음", "정보 없음"],
                 "weather": "정보 없음",
                 "events": [],
                 "reason": "LLM 응답을 JSON으로 파싱하지 못했습니다.",
@@ -189,8 +213,8 @@ def search_restaurants(city: str, count: int = 5) -> list[dict]:
     if DRY_RUN:
         # Return a small set of sample restaurants for dry-run/testing
         return [
-            {"name": "모범횟집", "address": "부산 해운대구", "category": "해산물", "url": "http://example.com", "lat": "35.163", "lng": "129.163"},
-            {"name": "달맞이카페", "address": "부산 달맞이길", "category": "카페", "url": "http://example.com", "lat": "35.165", "lng": "129.169"},
+            {"name": f"{city} 모범횟집", "address": f"{city} 대표 맛집 거리", "category": "해산물", "url": "http://example.com", "lat": 35.163, "lng": 129.163},
+            {"name": f"{city} 달맞이카페", "address": f"{city} 관광지 인근", "category": "카페", "url": "http://example.com", "lat": 35.165, "lng": 129.169},
         ][:count]
 
     if not city or city == "정보 없음":
@@ -201,10 +225,16 @@ def search_restaurants(city: str, count: int = 5) -> list[dict]:
         print("    - 오류: .env에 API HUB 호출 URL인 NAVER_API_URL을 설정하세요.")
         return []
 
-    headers = {
-        "X-NCP-APIGW-API-KEY-ID": NAVER_API_KEY_ID,
-        "X-NCP-APIGW-API-KEY": NAVER_API_KEY,
-    }
+    if os.getenv("NCP_APIGW_API_KEY_ID") and os.getenv("NCP_APIGW_API_KEY"):
+        headers = {
+            "X-NCP-APIGW-API-KEY-ID": os.getenv("NCP_APIGW_API_KEY_ID"),
+            "X-NCP-APIGW-API-KEY": os.getenv("NCP_APIGW_API_KEY"),
+        }
+    else:
+        headers = {
+            "X-Naver-Client-Id": NAVER_CLIENT_ID,
+            "X-Naver-Client-Secret": NAVER_CLIENT_SECRET,
+        }
     params = {"query": f"{city} 맛집", "display": count}
 
     try:
@@ -236,60 +266,51 @@ def search_restaurants(city: str, count: int = 5) -> list[dict]:
                     "address": item.get("roadAddress") or item.get("address", ""),
                     "category": item.get("category", ""),
                     "url": item.get("link", ""),
-                    "lat": item.get("mapy", ""),
-                    "lng": item.get("mapx", ""),
+                    "x": float(item["mapx"]) if item.get("mapx") else None,
+                    "y": float(item["mapy"]) if item.get("mapy") else None,
                 }
             )
         print(f"    - 맛집 {len(restaurants)}곳 검색 완료")
         return restaurants
 
     except requests.exceptions.RequestException as e:
-        log_error("place_search", "NETWORK_ERROR", str(e))
-        print(f"    - 오류: 네트워크 오류({e}). 맛집 섹션은 '데이터 없음'으로 처리합니다.")
+        log_error("place_search", "REQUEST_ERROR", str(e))
+        print(f"    - 오류: 장소 검색 요청 실패({e}). 맛집 섹션은 '데이터 없음'으로 처리합니다.")
+        return []
+    except (ValueError, TypeError, KeyError) as e:
+        log_error("place_search", "RESPONSE_ERROR", str(e))
+        print(f"    - 오류: 장소 검색 응답 처리 실패({e}). 맛집 섹션은 '데이터 없음'으로 처리합니다.")
         return []
 
 
 # ---------------------------------------------------------------------------
 # 7단계: 최종 리포트 생성 (LLM)
 # ---------------------------------------------------------------------------
-def generate_report(travel_date: str, recommendation: dict, restaurants: list[dict]) -> str:
+def generate_report(travel_date: str, recommendation: dict, restaurants_by_city: dict[str, list[dict]]) -> str:
     global DRY_RUN
+    restaurants_text = format_restaurants_by_city(restaurants_by_city)
     if DRY_RUN:
-        # Build a simple Markdown report for dry-run
-        if restaurants:
-            restaurant_text = "\n".join(f"- {r['name']} ({r.get('category','')}) - {r.get('address','')}" for r in restaurants)
-        else:
-            restaurant_text = "데이터 없음 (장소 검색 결과 0건)"
-
         events_text = ", ".join(recommendation.get("events", [])) or "정보 없음"
 
         md = f"# {travel_date} 국내 여행 추천 리포트\n\n"
-        md += f"## 추천 지역\n{recommendation.get('recommended_city')}\n\n"
+        md += f"## 추천 지역\n{', '.join(recommendation.get('recommended_cities', []))}\n\n"
         md += f"## 추천 이유\n{recommendation.get('reason')}\n\n"
         md += f"## 날씨 요약\n{recommendation.get('weather')}\n\n"
         md += f"## 행사/축제\n{events_text}\n\n"
-        md += f"## 맛집 추천\n{restaurant_text}\n\n"
+        md += f"## 지역별 맛집 추천\n{restaurants_text}\n\n"
         md += "## 1일 일정 제안 (오전/오후/저녁)\n- 오전: 자유시간\n- 오후: 투어\n- 저녁: 식사\n"
         return md
-    if restaurants:
-        restaurant_text = "\n".join(
-            f"- {r['name']} ({r.get('category', '')}) - {r.get('address', '')}"
-            for r in restaurants
-        )
-    else:
-        restaurant_text = "데이터 없음 (장소 검색 결과 0건)"
-
     events_text = ", ".join(recommendation.get("events", [])) or "정보 없음"
 
     prompt = f"""아래 정보를 바탕으로 국내 여행 추천 리포트를 Markdown으로 작성해줘.
 
 여행 날짜: {travel_date}
-추천 지역: {recommendation.get('recommended_city')}
+추천 지역: {', '.join(recommendation.get('recommended_cities', []))}
 추천 이유: {recommendation.get('reason')}
 날씨: {recommendation.get('weather')}
 행사/축제: {events_text}
-맛집 목록:
-{restaurant_text}
+지역별 맛집 목록:
+{restaurants_text}
 
 다음 형식(제목/소제목)을 반드시 지켜서 작성해줘:
 # {travel_date} 국내 여행 추천 리포트
@@ -297,7 +318,7 @@ def generate_report(travel_date: str, recommendation: dict, restaurants: list[di
 ## 추천 이유
 ## 날씨 요약
 ## 행사/축제
-## 맛집 추천
+## 지역별 맛집 추천
 ## 1일 일정 제안 (오전/오후/저녁)
 """
 
@@ -306,10 +327,37 @@ def generate_report(travel_date: str, recommendation: dict, restaurants: list[di
     except Exception as e:
         log_error("report_generation", "LLM_ERROR", str(e))
         print(f"    - 오류: 리포트 생성 실패({e}). 기본 리포트로 대체합니다.")
-        return (
-            f"# {travel_date} 국내 여행 추천 리포트\n\n"
-            "리포트 생성 중 오류가 발생하여 기본 내용으로 대체되었습니다.\n"
-        )
+        return build_fallback_report(travel_date, recommendation, restaurants_by_city)
+
+
+def format_restaurants_by_city(restaurants_by_city: dict[str, list[dict]]) -> str:
+    sections = []
+    for city, restaurants in restaurants_by_city.items():
+        lines = [
+            f"- {item.get('name', '이름 없음')} ({item.get('category', '분류 없음')}) - {item.get('address', '주소 없음')}"
+            for item in restaurants
+        ] or ["- 데이터 없음"]
+        sections.append(f"### {city}\n" + "\n".join(lines))
+    return "\n\n".join(sections) or "데이터 없음"
+
+
+def build_fallback_report(travel_date: str, recommendation: dict, restaurants_by_city: dict[str, list[dict]]) -> str:
+    cities = recommendation.get("recommended_cities", ["정보 없음"])
+    reason = recommendation.get("reason", "정보 없음")
+    weather = recommendation.get("weather", "정보 없음")
+    events = recommendation.get("events", []) or ["정보 없음"]
+    return (
+        f"# {travel_date} 국내 여행 추천 리포트\n\n"
+        f"## 추천 지역\n{', '.join(cities)}\n\n"
+        f"## 추천 이유\n{reason}\n\n"
+        f"## 날씨 요약\n{weather}\n\n"
+        f"## 행사/축제\n" + "\n".join(f"- {event}" for event in events) + "\n\n"
+        "## 지역별 맛집 추천\n" + format_restaurants_by_city(restaurants_by_city) + "\n\n"
+        "## 1일 일정 제안 (오전/오후/저녁)\n"
+        "- 오전: 추천 지역의 대표 명소 방문\n"
+        "- 오후: 행사 또는 주변 산책\n"
+        "- 저녁: 추천 맛집에서 식사\n"
+    )
 
 
 def append_error_section(report_md: str) -> str:
@@ -322,12 +370,12 @@ def append_error_section(report_md: str) -> str:
 # ---------------------------------------------------------------------------
 # 8단계: 결과 저장
 # ---------------------------------------------------------------------------
-def save_results(travel_date: str, recommendation: dict, restaurants: list[dict], report_md: str):
+def save_results(travel_date: str, recommendation: dict, restaurants_by_city: dict[str, list[dict]], report_md: str):
     os.makedirs("results", exist_ok=True)
 
     raw_data = {
         "recommendation": recommendation,
-        "restaurants": restaurants,
+        "restaurants_by_city": restaurants_by_city,
         "errors": errors,
     }
     json_path = os.path.join("results", f"{travel_date}_raw.json")
@@ -345,21 +393,26 @@ def main() -> None:
     global DRY_RUN
     travel_date, dry = parse_args()
     DRY_RUN = dry
+    reset_errors()
     check_api_keys()
 
     print("[1/3] 1차 추천 생성 중(LLM)...")
     recommendation = get_recommendation(travel_date)
-    print(f'    - recommended_city: "{recommendation.get("recommended_city")}"')
+    cities = recommendation.get("recommended_cities", [])
+    print(f"    - recommended_cities: {', '.join(cities)}")
 
     print("[2/3] 맛집 검색 중(지도/장소 API)...")
-    restaurants = search_restaurants(recommendation.get("recommended_city", ""))
+    restaurants_by_city = {}
+    for city in cities:
+        print(f"    - {city} 지역 맛집 검색 중...")
+        restaurants_by_city[city] = search_restaurants(city)
 
     print("[3/3] 최종 리포트 생성 중(LLM)...")
-    report_md = generate_report(travel_date, recommendation, restaurants)
+    report_md = generate_report(travel_date, recommendation, restaurants_by_city)
     report_md = append_error_section(report_md)
     print("    - 리포트 생성 완료")
 
-    json_path, md_path = save_results(travel_date, recommendation, restaurants, report_md)
+    json_path, md_path = save_results(travel_date, recommendation, restaurants_by_city, report_md)
     print(f"\n완료! {md_path} 를 확인하세요. (원본 데이터: {json_path})")
 
 
