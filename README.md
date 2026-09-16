@@ -1,5 +1,3 @@
-네. 기존 README에 **“API 방식 실행”과 “웹에서 실행”을 명확히 분리**해서 넣는 것이 좋습니다. 현재 `travel_planner`가 Flask의 `app.py`와 CLI용 `travel_planner.py`를 사용하는 구조이므로, 아래처럼 README의 **6. 프로그램 실행 방법** 부분을 교체하면 됩니다.
-
 ````markdown
 ## 6. 프로그램 실행 방법
 
