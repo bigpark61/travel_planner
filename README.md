@@ -1,5 +1,5 @@
 ````markdown
-## 6. 프로그램 실행 방법
+## 1. 프로그램 실행 방법
 
 Travel Planner는 다음 방식으로 실행할 수 있습니다.
 
@@ -11,7 +11,7 @@ Travel Planner는 다음 방식으로 실행할 수 있습니다.
 
 ---
 
-### 6.1 가상환경 활성화
+### 1.1 가상환경 활성화
 
 프로젝트 폴더로 이동합니다.
 
@@ -40,7 +40,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 ---
 
-### 6.2 콘솔 프로그램 실행
+### 1.2 콘솔 프로그램 실행
 
 여행 날짜를 지정하여 Python 프로그램을 직접 실행할 수 있습니다.
 
@@ -75,11 +75,11 @@ results/
 
 ---
 
-## 7. API 방식으로 실행하기
+## 2. API 방식으로 실행하기
 
 Travel Planner는 Flask를 이용하여 Backend API 서버로 실행할 수 있습니다.
 
-### 7.1 Flask API 서버 시작
+### 2.1 Flask API 서버 시작
 
 가상환경이 활성화된 상태에서 다음 명령을 실행합니다.
 
@@ -106,7 +106,7 @@ python app.py
 
 ---
 
-### 7.2 API 호출 구조
+### 2.2 API 호출 구조
 
 웹 화면에서 사용자가 여행 정보를 입력하면 JavaScript가 Flask API를 호출합니다.
 
@@ -142,7 +142,7 @@ HTML / CSS / JavaScript
 
 ---
 
-### 7.3 API 동작 확인
+### 2.3 API 동작 확인
 
 Flask 서버가 실행 중인 상태에서 브라우저 또는 프로그램에서 `app.py`에 정의된 API Endpoint를 호출할 수 있습니다.
 
@@ -166,9 +166,9 @@ POST 방식으로 여행 정보를 전달하면 Flask가 요청을 받아 OpenAI
 
 ---
 
-## 8. 웹 브라우저에서 실행하기
+## 3. 웹 브라우저에서 실행하기
 
-### 8.1 Backend 서버 실행
+### 3.1 Backend 서버 실행
 
 먼저 VS Code의 PowerShell에서 다음을 실행합니다.
 
@@ -186,7 +186,7 @@ python app.py
 
 ---
 
-### 8.2 웹 브라우저 접속
+### 3.2 웹 브라우저 접속
 
 Chrome, Edge 등의 웹 브라우저를 실행하고 Flask가 표시한 주소로 접속합니다.
 
@@ -198,7 +198,7 @@ http://127.0.0.1:5000
 
 ---
 
-### 8.3 웹에서 여행 계획 생성
+### 3.3 웹에서 여행 계획 생성
 
 웹 화면에서 여행 날짜와 필요한 여행 조건을 입력한 후 실행 버튼을 클릭합니다.
 
@@ -222,11 +222,11 @@ API 호출에는 처리 시간이 필요하므로 AI 및 외부 API 응답이 �
 
 ---
 
-## 9. 외부 API 연동
+## 4. 외부 API 연동
 
 Travel Planner에서는 두 종류의 외부 API를 사용합니다.
 
-### 9.1 OpenAI API
+### 4.1 OpenAI API
 
 OpenAI API는 다음 기능에 사용합니다.
 
@@ -243,7 +243,7 @@ OPENAI_API_KEY=본인의_OPENAI_API_KEY
 
 ---
 
-### 9.2 NAVER 장소 검색 API
+### 4.2 NAVER 장소 검색 API
 
 추천 여행지의 지역 및 맛집 정보를 검색합니다. 사용하는 인증 방식에 따라 아래 설정 중 하나만 사용합니다.
 
@@ -265,7 +265,7 @@ NAVER_CLIENT_SECRET=발급받은_CLIENT_SECRET
 
 ---
 
-## 10. API Key 보안 관리
+## 5. API Key 보안 관리
 
 OpenAI API Key와 NAVER API HUB 인증정보는 프로그램 실행에 필요한 중요한 보안 정보입니다.
 
@@ -338,7 +338,7 @@ git grep -n -I -E "sk-[A-Za-z0-9_-]{20,}|NCP_APIGW_API_KEY=|NAVER_CLIENT_SECRET=
 
 ---
 
-## 11. 결과물 확인 방법
+## 6. 결과물 확인 방법
 
 ### 웹 실행 결과
 
@@ -379,7 +379,7 @@ results/
 
 ---
 
-## 12. 실행 방법 요약
+## 7. 실행 방법 요약
 
 ### 웹으로 실행
 
