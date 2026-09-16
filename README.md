@@ -243,25 +243,24 @@ OPENAI_API_KEY=본인의_OPENAI_API_KEY
 
 ---
 
-### 9.2 NAVER API HUB
+### 9.2 NAVER 장소 검색 API
 
-NAVER API HUB는 추천 여행지의 지역 및 맛집 정보를 검색하는 데 사용합니다.
+추천 여행지의 지역 및 맛집 정보를 검색합니다. 사용하는 인증 방식에 따라 아래 설정 중 하나만 사용합니다.
 
-환경변수:
+Naver API HUB를 사용하는 경우:
 
 ```env
 NAVER_API_URL=https://naverapihub.apigw.ntruss.com/search/v1/local
-NAVER_CLIENT_ID=본인의_NAVER_CLIENT_ID
-NAVER_CLIENT_SECRET=본인의_NAVER_CLIENT_SECRET
+NCP_APIGW_API_KEY_ID=발급받은_API_KEY_ID
+NCP_APIGW_API_KEY=발급받은_API_KEY
 ```
 
-NAVER API HUB 인증 Header:
+일반 Naver Open API를 사용하는 경우:
 
-```python
-headers = {
-    "X-NCP-APIGW-API-KEY-ID": NAVER_CLIENT_ID,
-    "X-NCP-APIGW-API-KEY": NAVER_CLIENT_SECRET
-}
+```env
+NAVER_API_URL=https://openapi.naver.com/v1/search/local.json
+NAVER_CLIENT_ID=발급받은_CLIENT_ID
+NAVER_CLIENT_SECRET=발급받은_CLIENT_SECRET
 ```
 
 ---
@@ -295,15 +294,24 @@ const OPENAI_API_KEY = "실제_API_KEY";
      └──── NAVER API HUB
 ```
 
-프로젝트 루트의 `.env` 파일에서 인증정보를 관리합니다.
+프로젝트를 처음 실행할 때 프로젝트 루트에 로컬용 `.env` 파일을 만들고 인증정보를 입력합니다. 아래 값은 형식만 보여주는 예시이며, 실제 키를 README나 `.env_exam`에 입력하지 않습니다.
 
 ```env
-OPENAI_API_KEY=본인의_OPENAI_API_KEY
+OPENAI_API_KEY=여기에_로컬에서만_실제_키_입력
 
-NAVER_API_URL=https://naverapihub.apigw.ntruss.com/search/v1/local
-NAVER_CLIENT_ID=본인의_NAVER_CLIENT_ID
-NAVER_CLIENT_SECRET=본인의_NAVER_CLIENT_SECRET
+NAVER_API_URL=사용할_API의_URL
+NCP_APIGW_API_KEY_ID=여기에_로컬에서만_실제_KEY_ID_입력
+NCP_APIGW_API_KEY=여기에_로컬에서만_실제_KEY_입력
 ```
+
+보안 규칙:
+
+- 실제 API Key는 로컬 `.env`에만 입력합니다.
+- `.env`, `.env.exam`, README, Python, HTML, JavaScript 파일에 실제 Key를 기록하거나 복사하지 않습니다.
+- API Key가 포함된 파일을 GitHub에 Push하지 않습니다. `.gitignore`의 `.env` 및 `.env.*` 규칙을 삭제하지 않습니다.
+- 화면 공유, 과제 제출, 스크린샷, 로그에 API Key가 보이지 않는지 확인합니다.
+- Key가 노출되었다면 해당 서비스를 즉시 중지하거나 Key를 폐기하고 새 Key를 발급받습니다.
+- 저장소에 이미 올라간 Key는 파일을 삭제해도 안전하지 않으므로 반드시 폐기하고 재발급합니다.
 
 그리고 `.gitignore`에 반드시 다음 내용을 포함합니다.
 
@@ -320,9 +328,11 @@ GitHub Push 전에는 반드시 확인합니다.
 
 ```powershell
 git status
+git diff -- .
+git grep -n -I -E "sk-[A-Za-z0-9_-]{20,}|NCP_APIGW_API_KEY=|NAVER_CLIENT_SECRET=" -- ':!README.md'
 ```
 
-`git status`에 `.env`가 나타나지 않는지 확인한 후 Push합니다.
+`git status`에 `.env` 또는 실제 키가 포함된 파일이 나타나지 않는지 확인한 후 Push합니다. 검색 명령이 실제 키를 출력하면 Push를 중지하고 해당 키를 폐기합니다.
 
 > API Key가 GitHub 등에 노출된 경우 단순히 파일을 삭제하는 것만으로 끝내지 말고, 해당 API Key를 폐기한 후 새로운 Key를 발급받아야 합니다.
 
